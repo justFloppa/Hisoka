@@ -14,5 +14,8 @@
   "devDependencies": {
     "brittle": "^3.0.0",
     "pear-interface": "^1.0.0"
+  },
+  "dependencies": {
+    "hypercore": "^11.27.3"
   }
 }
