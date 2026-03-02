@@ -1,74 +1,79 @@
-// For interactive documentation and code auto-completion in editor
-/** @typedef {import('pear-interface')} */
-
-/* global Pear */
-import Hyperswarm from 'hyperswarm'
-import crypto from 'hypercore-crypto'
+import DHT from 'hyperdht'
 import b4a from 'b4a'
-import Runtime from 'pear-electron'
-import Bridge from 'pear-bridge'
+import process from 'bare-process'
+import readline from 'bare-readline' 
 
-const { teardown, updates } = Pear
 
-// Initialize bridge and runtime
-const bridge = new Bridge()
-await bridge.ready()
-
-const runtime = new Runtime()
-const pipe = await runtime.start({ bridge })
-pipe.on('close', () => Pear.exit())
-
-// P2P setup
-const swarm = new Hyperswarm()
-
-teardown(() => swarm.destroy())
-
-updates(() => Pear.reload())
-
-// Handle P2P connections
-swarm.on('connection', (peer) => {
-  const name = b4a.toString(peer.remotePublicKey, 'hex').substr(0, 6)
-  
-  peer.on('data', (message) => {
-    // Send message to UI via bridge
-    bridge.send('message', { from: name, message: message.toString() })
+function readInput(prompt, callback) {
+  console.log(prompt)
+  process.stdin.once('data', (data) => {
+    const input = data.toString().trim()
+    callback(input)
   })
-  
-  peer.on('error', e => console.log(`Connection error: ${e}`))
-})
-
-swarm.on('update', () => {
-  // Update peer count in UI
-  bridge.send('peer-count', swarm.connections.size)
-})
-
-// Listen for UI events via bridge
-bridge.on('create-chat-room', async () => {
-  const topicBuffer = crypto.randomBytes(32)
-  await joinSwarm(topicBuffer)
-})
-
-bridge.on('join-chat-room', async (topicStr) => {
-  const topicBuffer = b4a.from(topicStr, 'hex')
-  await joinSwarm(topicBuffer)
-})
-
-bridge.on('send-message', (message) => {
-  // Send to all connected peers
-  const peers = [...swarm.connections]
-  for (const peer of peers) peer.write(message)
-  
-  // Also show own message
-  bridge.send('message', { from: 'You', message })
-})
-
-async function joinSwarm(topicBuffer) {
-  bridge.send('loading-start')
-  
-  const discovery = swarm.join(topicBuffer, { client: true, server: true })
-  await discovery.flushed()
-  
-  const topic = b4a.toString(topicBuffer, 'hex')
-  bridge.send('chat-joined', topic)
-  bridge.send('loading-end')
 }
+
+const dht = new DHT() //хэш таблица
+
+//сервер
+async function runServer() {
+    const server = dht.createServer(conn => { //сервер создание
+    console.log('соединено')
+    process.stdin.pipe(conn).pipe(process.stdout) //отображение своих и чужих соо
+    })
+
+    const keyPair = DHT.keyPair() //public и private ключи создание
+    server.listen(keyPair).then(() => { //сервер слушает
+    console.log('public key: ', b4a.toString(keyPair.publicKey, 'hex')) //наш ключ
+})
+
+    Pear.teardown(() => server.close())
+}
+
+async function runClient() {
+    console.log("введите публичный ключ: ")
+    const input = await new Promise(resolve => {
+            process.stdin.once('data', (data) => {
+                resolve(data.toString().trim())
+            })
+        })
+    let key = input
+
+
+    //const key = Pear.config.args[0] //берет ключ собеседника
+    //if (!key) throw new Error('provide a key') //просит ключ
+    
+    console.log('Connecting to:', key) //подключаемся по ключу
+    const publicKey = b4a.from(key, 'hex') //конверт ключа в бин
+    
+    const conn = dht.connect(publicKey) //создаем соединение используя таблицу и наш ключ
+    conn.once('open', () => console.log('got connection!')) //подключаемся
+    
+    process.stdin.pipe(conn).pipe(process.stdout) //выводим сообщения собеседника и наши
+}
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
+
+console.log("1-сервер\n2-клиент")
+
+
+readInput('\nВыберите режим: ', (choice) => {
+  switch(choice) {
+    case '1':
+      runServer()
+      break
+    case '2':
+      runClient()
+      break
+    default:
+      console.log('попробуйте еще раз')
+      process.exit(1)
+  }
+})
+
+Pear.teardown(() => {
+  dht.destroy()
+})
+
