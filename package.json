@@ -1,15 +1,21 @@
 {
   "name": "hisoka",
   "main": "index.js",
-  "pear": {
-    "name": "hisoka",
-    "type": "terminal"
-  },
   "type": "module",
   "license": "Apache-2.0",
   "scripts": {
     "dev": "pear run -d .",
     "test": "brittle test/*.test.js"
+  },
+  "pear": {
+    "name": "hisoka",
+    "type": "desktop",
+    "pre": "pear-electron/pre",
+    "gui": {
+      "userAgent": "custom user agent",
+      "hideable": true,
+      "closesHides": true
+    }
   },
   "devDependencies": {
     "brittle": "^3.0.0",
