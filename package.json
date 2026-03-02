@@ -1,8 +1,8 @@
 {
-  "name": "Hisoka",
+  "name": "hisoka",
   "main": "index.js",
   "pear": {
-    "name": "Hisoka",
+    "name": "hisoka",
     "type": "terminal"
   },
   "type": "module",
@@ -16,6 +16,9 @@
     "pear-interface": "^1.0.0"
   },
   "dependencies": {
-    "hypercore": "^11.27.3"
+    "b4a": "^1.8.0",
+    "hypercore": "^11.27.3",
+    "hypercore-crypto": "^3.6.1",
+    "hyperswarm": "^4.17.0"
   }
 }
