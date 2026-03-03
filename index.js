@@ -3,7 +3,7 @@ import b4a from 'b4a'
 import process from 'bare-process'
 import readline from 'bare-readline' 
 
-const dht = new DHT() //хэш таблица
+const dht = new DHT({connectionKeepAlive:300000}) //хэш таблица
 
 //сервер
 async function runServer() {
@@ -11,11 +11,12 @@ async function runServer() {
 
     const server = dht.createServer(conn => { //сервер создание
     console.log('к вам подключились')
+
     process.stdin.pipe(conn).pipe(process.stdout) //отображение своих и чужих соо
     })
 
     server.listen(keyPair).then(() => { //сервер слушает
-    console.log('сервер запущен\npublic key: ', b4a.toString(keyPair.publicKey, 'hex')) //наш ключ
+    console.log('сервер запущен\npublic key:', b4a.toString(keyPair.publicKey, 'hex')) //наш ключ
     console.log("введите ключ или ждите подключения по вашему: ")
 })
 
