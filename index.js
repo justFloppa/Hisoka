@@ -17,7 +17,7 @@ const dht = new DHT() //хэш таблица
 //сервер
 async function runServer() {
     const server = dht.createServer(conn => { //сервер создание
-    console.log('соединено')
+    console.log('server started')
     process.stdin.pipe(conn).pipe(process.stdout) //отображение своих и чужих соо
     })
 
