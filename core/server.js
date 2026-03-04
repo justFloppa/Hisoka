@@ -1,9 +1,18 @@
 import b4a from 'b4a'
 import DHT from 'hyperdht' 
 import process from 'bare-process'
+import { returnSession, saveSession } from '../utilities/saveSession.js'
 
 export async function runServer(dht) {
-    const keyPair = DHT.keyPair() //public и private ключи создание
+    let keyPair
+    try {
+        keyPair = await (await returnSession()).keyPair
+    }
+    catch {
+        keyPair = DHT.keyPair()
+        saveSession(b4a.toString(keyPair.publicKey, 'hex'), b4a.toString(keyPair.secretKey, 'hex'))
+    }
+
 
     const server = dht.createServer(conn => { //сервер создание
     console.log('к вам подключились')
