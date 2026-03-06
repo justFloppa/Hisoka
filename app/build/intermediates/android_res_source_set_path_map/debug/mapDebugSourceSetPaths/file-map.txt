@@ -1,0 +1,7 @@
+com.example.hisoka.app-pngs-0 /home/arslan/Desktop/Hisoka/app/build/generated/res/pngs/debug
+com.example.hisoka.app-updated_navigation_xml-1 /home/arslan/Desktop/Hisoka/app/build/generated/updated_navigation_xml/debug
+com.example.hisoka.app-packageDebugResources-2 /home/arslan/Desktop/Hisoka/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.example.hisoka.app-packageDebugResources-3 /home/arslan/Desktop/Hisoka/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.example.hisoka.app-debug-4 /home/arslan/Desktop/Hisoka/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.example.hisoka.app-debug-5 /home/arslan/Desktop/Hisoka/app/src/debug/res
+com.example.hisoka.app-main-6 /home/arslan/Desktop/Hisoka/app/src/main/res
