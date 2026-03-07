@@ -4,24 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.hisoka.ui.theme.HisokaTheme
 
 class MainActivity : ComponentActivity() {
@@ -37,7 +30,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun HisokaScreen() {
-    var showDialog = remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
+    var peerKey by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -45,9 +39,7 @@ fun HisokaScreen() {
             .background(Color.DarkGray)
     ) {
         Button(
-            onClick = {
-                println("Кнопка нажата")
-            },
+            onClick = { showDialog = true },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(28.dp)
@@ -68,6 +60,70 @@ fun HisokaScreen() {
                     color = Color.White,
                     modifier = Modifier.offset(x = (-2).dp)
                 )
+            }
+        }
+
+        // Модальное окно
+        if (showDialog) {
+            Dialog(onDismissRequest = { showDialog = false }) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Добавить собеседника",
+                            fontSize = 18.sp,
+                            color = Color.Black
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        OutlinedTextField(
+                            value = peerKey,
+                            onValueChange = { peerKey = it },
+                            label = { Text("Введите публичный ключ") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            TextButton(
+                                onClick = { showDialog = false }
+                            ) {
+                                Text("Отмена")
+                            }
+
+                            Button(
+                                onClick = {
+                                    if (peerKey.isNotBlank()) {
+                                        println("Подключаемся к: $peerKey")
+                                        // Здесь будет вызов runClient
+                                        showDialog = false
+                                        peerKey = ""
+                                    }
+                                }
+                            ) {
+                                Text("Добавить")
+                            }
+                        }
+                    }
+                }
             }
         }
     }
