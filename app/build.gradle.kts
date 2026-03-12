@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation("com.pears.bare:barekit:0.0.6")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
