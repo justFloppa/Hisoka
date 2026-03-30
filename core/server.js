@@ -4,14 +4,14 @@ import process from 'bare-process'
 import { returnSession, saveSession } from '../utilities/saveSession.js'
 
 export async function runServer(dht) {
-    let keyPair
-    try {
-        keyPair = await (await returnSession()).keyPair
-    }
-    catch {
-        keyPair = DHT.keyPair()
-        saveSession(b4a.toString(keyPair.publicKey, 'hex'), b4a.toString(keyPair.secretKey, 'hex'))
-    }
+//     let keyPair
+//     try {
+//         keyPair = await (await returnSession()).keyPair
+//     }
+//     catch {
+let keyPair = DHT.keyPair()
+// saveSession(b4a.toString(keyPair.publicKey, 'hex'), b4a.toString(keyPair.secretKey, 'hex'))
+//     }
 
 
     const server = dht.createServer(conn => { //сервер создание
