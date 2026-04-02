@@ -1,12 +1,19 @@
 import { useState } from 'react'
+import { useEffect } from 'react'
+import bridge from '../core/bridge'
+
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
 function App() {
+  useEffect(() => {
+    console.log("1243")
+    bridge.connect().catch(console.error)
+  }, [])
   const [count, setCount] = useState(0)
-
+  console.log(12314544)
   return (
     <>
       <section id="center">

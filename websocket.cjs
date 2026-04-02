@@ -13,14 +13,14 @@ function findFreePort(startPort, callback) {
 
 findFreePort(3030, (port) => {
   const wss = new WebSocket.Server({ port })
-  console.log(`port: ${port}`)
+  console.log(`JS: port: ${port}`)
   
-  fs.writeFileSync('./tmp/work-port.txt', port.toString())
+  fs.writeFileSync('./hisoka/tmp/work-port.txt', port.toString())
   
   const pear = spawn('pear', ['run', '.', '--dev'])
   
   wss.on('connection', (ws) => {
-    console.log('React connected')
+    console.log('JS: react connected')
     
     ws.on('message', (message) => {
       pear.stdin.write(message + '\n')
