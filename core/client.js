@@ -1,27 +1,37 @@
 import b4a from 'b4a'
 import process from 'bare-process'
+import { registerChat, unregisterChat } from './chats.js'
+
+function emit(event, data) {
+  process.stdout.write(JSON.stringify({ event, data }) + '\n')
+}
 
 export async function runClient(key, dht) {
-    
-    console.log('Connecting to:', key) //подключаемся по ключу
-    const publicKey = b4a.from(key, 'hex') //конверт ключа в бин
-    
-    const conn = dht.connect(publicKey) //создаем соединение используя таблицу и наш ключ
-    conn.once('open', () => console.log('подключено')) //подключаемся
-    
-    // process.stdin.pipe(conn).pipe(process.stdout) //выводим сообщения собеседника и наши
-    
-    conn.on('data', (data) => {
-        const message = JSON.parse(data.toString())
-        message.from = key
-        process.stdout.write(JSON.stringify({ event: 'message', data: message }) + '\n')
-    })
-    
-    process.stdin.on('data', (input) => {
-        const message = {
-            text: input.toString().trim(),
-            timestamp: Date.now()
-        }
-        conn.write(JSON.stringify(message))
-    })
+  const publicKey = b4a.from(key, 'hex')
+  const conn = dht.connect(publicKey)
+
+  conn.once('open', () => {
+    registerChat(key, conn)
+    emit('peer_connected', { peerKey: key })
+  })
+
+  conn.on('data', (data) => {
+    try {
+      const message = JSON.parse(data.toString())
+      message.from = key
+      message.timestamp = message.timestamp || Date.now()
+      emit('message', message)
+    } catch {
+      emit('message', {
+        text: data.toString(),
+        from: key,
+        timestamp: Date.now()
+      })
+    }
+  })
+
+  conn.on('close', () => {
+    unregisterChat(key)
+    emit('peer_disconnected', { peerKey: key })
+  })
 }

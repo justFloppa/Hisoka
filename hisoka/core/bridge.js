@@ -75,6 +75,18 @@ class P2PBridge {
     this.send(`/${key}`)
   }
 
+  sendChat(peerKey, text) {
+    const peer = peerKey.trim().replace(/^0x/i, '').replace(/\s+/g, '')
+    if (!peer) return
+    this.send(
+      JSON.stringify({
+        action: 'send',
+        peer,
+        text: String(text)
+      })
+    )
+  }
+
   onMessage(callback) {
     this.onMessageCallback = callback
   }
