@@ -30,8 +30,10 @@ class P2PBridge {
       this.ws.onerror = reject
       
       this.ws.onmessage = (event) => {
+        const data = JSON.parse(event.data)
+        console.log(data)
         if (this.onMessageCallback) {
-          this.onMessageCallback(event.data)
+          this.onMessageCallback(data)
         }
       }
       

@@ -23,11 +23,19 @@ findFreePort(3030, (port) => {
     console.log('JS: react connected')
     
     ws.on('message', (message) => {
-      pear.stdin.write(message + '\n')
+      const data = message.toString()
+      pear.stdin.write(data + '\n')
     })
     
     pear.stdout.on('data', (data) => {
-      ws.send(data.toString())
+      const output = data.toString()
+      
+      try {
+        const json = JSON.parse(output)
+        ws.send(JSON.stringify(json))
+      } catch {
+        console.log('not json:', output)
+      }
     })
   })
 })

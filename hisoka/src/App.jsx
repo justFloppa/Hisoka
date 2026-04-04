@@ -8,9 +8,14 @@ import heroImg from './assets/hero.png'
 import './App.css'
 
 function App() {
+  const [messages, setMessages] = useState([])
   useEffect(() => {
-    console.log("1243")
     bridge.connect().catch(console.error)
+
+    bridge.onMessage((msg) => {
+    console.log('New message:', msg)
+    setMessages(prev => [...prev, msg])
+  })
   }, [])
   const [count, setCount] = useState(0)
   console.log(12314544)
