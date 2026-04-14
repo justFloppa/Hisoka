@@ -22,7 +22,7 @@ findFreePort(3030, (port) => {
   const wss = new WebSocket.Server({ port })
   console.log(`JS: port: ${port}`)
 
-  fs.writeFileSync('./hisoka/tmp/work-port.txt', port.toString())
+  fs.writeFileSync('./tmp/work-port.txt', port.toString())
 
   const pear = spawn('pear', ['run', '.', '--dev'])
 
